@@ -21,20 +21,22 @@
         <conv:FileDirectoryConverter x:Key="file-directory_converter"></conv:FileDirectoryConverter>
     </Window.Resources>
     <Grid Background="{StaticResource secondary_color}">
-        <DockPanel>
+        <DockPanel Margin="15">
             <DockPanel DockPanel.Dock="Top">
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-                    <Button Background="Transparent" BorderBrush="Transparent" Margin="10" ToolTip="Delete">
-                        <StackPanel Orientation="Horizontal">
-                            <fa:ImageAwesome Icon="Solid_Trash" Width="20" Margin="5"></fa:ImageAwesome>
-                        </StackPanel>
-                    </Button>
-                    <Button Background="Transparent" BorderBrush="Transparent" Margin="10" ToolTip="Create">
-                        <StackPanel Orientation="Horizontal">
-                            <fa:ImageAwesome Icon="Regular_File" Width="19" Margin="5"></fa:ImageAwesome>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
+                <GroupBox DockPanel.Dock="Top" Header="Actions">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Background="Transparent" BorderBrush="Transparent" ToolTip="Delete">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:ImageAwesome Icon="Solid_Trash" Width="20" Margin="2"></fa:ImageAwesome>
+                            </StackPanel>
+                        </Button>
+                        <Button Background="Transparent" BorderBrush="Transparent"  ToolTip="Create" Margin="20,0,0,0">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:ImageAwesome Icon="Regular_File" Width="19" Margin="2"></fa:ImageAwesome>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </GroupBox>
                 <DockPanel>
                     <DockPanel.Resources>
                         <DataTemplate DataType="{x:Type sys:DirectoryInfo}">
@@ -52,19 +54,20 @@
                             </TextBlock>
                             <TextBlock Text="{Binding CurrentDirectory.Name}" Style="{StaticResource text}"></TextBlock>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                        <StackPanel Orientation="Horizontal" Margin="15,0,15,0">
+                            
                             <Button Command="{Binding SlideDirectory}" Padding="5">
                                 <Button.CommandParameter>
                                     <vm:Direction>Left</vm:Direction>
                                 </Button.CommandParameter>
-                                <fa:ImageAwesome Icon="Solid_ArrowAltCircleLeft" Width="20" Foreground="{StaticResource main_color}">
+                                <fa:ImageAwesome Icon="Solid_ArrowAltCircleLeft" Width="20" Foreground="{StaticResource main_color}" Margin="5">
                                 </fa:ImageAwesome>
                             </Button>
                             <Button  Margin="10,0,0,0" Padding="5" Command="{Binding SlideDirectory}">
                                 <Button.CommandParameter>
                                     <vm:Direction>Right</vm:Direction>
                                 </Button.CommandParameter>
-                                <fa:ImageAwesome Icon="Solid_ArrowAltCircleRight" Width="20" Foreground="{StaticResource main_color}"></fa:ImageAwesome>
+                                <fa:ImageAwesome Icon="Solid_ArrowAltCircleRight" Width="20" Foreground="{StaticResource main_color}" Margin="5"></fa:ImageAwesome>
                             </Button>
                         </StackPanel>
                     </DockPanel>
@@ -74,7 +77,7 @@
             </DockPanel>
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition  Width="180"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <TreeView ItemsSource="{Binding CurrentDirectory, Converter={StaticResource file-directory_converter}}" 
@@ -99,7 +102,7 @@
                     </TreeView.Resources>
                 </TreeView>
                 <GridSplitter Grid.Column="1" ResizeDirection="Columns" Background="{StaticResource main_color}" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="1"></GridSplitter>
-                <ContentPresenter Content="{Binding SelectedDirectoryItem}" Grid.Column="1">
+                <ContentPresenter Content="{Binding SelectedDirectoryItem}" Grid.Column="1" Margin="10">
                     <ContentPresenter.Resources>
                         <DataTemplate DataType="{x:Type vms:DirectoryViewModel}">
                             <Grid>
@@ -118,8 +121,8 @@
                             <Grid Margin="5">
                                 <DockPanel>
                                     <fa:ImageAwesome Icon="Regular_File" Width="75" DockPanel.Dock="Top"></fa:ImageAwesome>
-                                    <GroupBox Header="Information" BorderBrush="{StaticResource main_color}" Foreground="{StaticResource text_color}">
-                                        <StackPanel Margin="0,10,0,10">
+                                    <GroupBox Header="Information" BorderBrush="{StaticResource main_color}" Foreground="{StaticResource text_color}" Margin="0,10,0,0">
+                                        <StackPanel Margin="0,10,0,0">
                                             <TextBlock  Text="{Binding LastModified, StringFormat='Last modified at {0}'}" Style="{StaticResource text}"></TextBlock>
                                             <TextBlock  Text="{Binding FirstView, StringFormat='Part of content in this file: {0}'}" TextWrapping="Wrap" Style="{StaticResource text}"></TextBlock>
                                             <TextBlock  Text="{Binding Size, StringFormat='Size in bytes of file is {0}'}" TextWrapping="Wrap" Style="{StaticResource text}"></TextBlock>

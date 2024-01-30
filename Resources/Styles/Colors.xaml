@@ -3,4 +3,5 @@
     <SolidColorBrush Color="#5523f9" x:Key="main_color"></SolidColorBrush>
     <SolidColorBrush Color="#212121" x:Key="secondary_color"></SolidColorBrush>
     <SolidColorBrush Color="White" x:Key="text_color"></SolidColorBrush>
+    <SolidColorBrush Color="#FF3F3F3F" x:Key="help_color"></SolidColorBrush>
 </ResourceDictionary>

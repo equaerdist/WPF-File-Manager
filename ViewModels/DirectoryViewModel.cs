@@ -12,16 +12,41 @@ namespace fileChanger.ViewModels
     class DirectoryViewModel : BaseViewModel
     {
         private DirectoryInfo _directory;
-        public DirectoryViewModel[] SubDirectories => _directory
-            .GetDirectories()
-            .AsParallel()
-            .Select(d => new DirectoryViewModel(d.FullName))
-            .ToArray();
+        public IEnumerable<DirectoryViewModel> SubDirectories 
+        { 
+            get
+            {
+                try
+                {
+                    return _directory
+                    .GetDirectories()
+                    .Select(d => new DirectoryViewModel(d.FullName));
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return Enumerable.Empty<DirectoryViewModel>();
+                }
+            } 
+        }
         public string Name => _directory.Name;
-        public string FilesCountInside => _directory.EnumerateFileSystemInfos()
-            .AsParallel()
-            .Count()
-            .ToString();
+        public string FilesCountInside
+        {
+            get
+            {
+                try
+                {
+                    return _directory.EnumerateFileSystemInfos()
+                    .Count()
+                    .ToString();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return "N/A";
+                }
+            }
+        }
         public string LastModified => _directory.LastWriteTime.ToString("hh:mm:ss-dd:MM:yyyy");
         public DirectoryViewModel(string path)
         {
@@ -35,11 +60,19 @@ namespace fileChanger.ViewModels
         private string _view = string.Empty;
         private async Task<string> GetViewFromFile()
         {
-            using var file = File.OpenRead(_file.FullName);
-            using var reader = new StreamReader(file);
-            var buffer = new char[50];
-            var readed = await reader.ReadBlockAsync(buffer, 0, 50);
-            return new string(buffer) ?? "Некорректный контент";
+            try
+            {
+                using var file = File.OpenRead(_file.FullName);
+                using var reader = new StreamReader(file);
+                var buffer = new char[50];
+                var readed = await reader.ReadBlockAsync(buffer, 0, 50);
+                return new string(buffer) ?? "Некорректный контент";
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "Не удалось прочитать содержимое";
+            }
         }
         public string LastModified => _file.LastWriteTime.ToString("hh:mm:ss-dd:MM:yyyy");
         public string Size => _file.Length.ToString();
