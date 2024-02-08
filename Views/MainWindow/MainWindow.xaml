@@ -12,7 +12,7 @@
         xmlns:sys="clr-namespace:System.IO;assembly=mscorlib"
         mc:Ignorable="d"
         xmlns:conv="clr-namespace:fileChanger.Infrastructure.Converters.CurrentDirectoryConverter"
-        Title="MainWindow" Height="450" Width="800" DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowViewModel}">
+        Title="MainWindow" Height="700" Width="800" DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowViewModel}">
     
     <Window.Resources>
         <conv:DirectoryConverter x:Key="converter_directory"></conv:DirectoryConverter>
@@ -122,8 +122,12 @@
                               HorizontalAlignment="Left" 
                               VerticalAlignment="Stretch" 
                               Width="1"></GridSplitter>
-                <DockPanel Grid.Column="1"  Margin="10">
-                    <ContentPresenter Content="{Binding SelectedDirectoryItem}" DockPanel.Dock="Top">
+                <Grid Grid.Column="1"  Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <ContentPresenter Content="{Binding SelectedDirectoryItem}" Grid.Row="0">
                         <ContentPresenter.Resources>
                             <DataTemplate DataType="{x:Type vms:DirectoryViewModel}">
                                 <Grid>
@@ -154,15 +158,15 @@
                             </DataTemplate>
                         </ContentPresenter.Resources>
                     </ContentPresenter>
-                    <StackPanel Orientation="Horizontal" Margin="5,10,0,0" DockPanel.Dock="Bottom" MaxHeight="50">
-                        <Button FontSize="20" FontWeight="Bold" Command="{Binding EditFileCommand}">
-                            <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" Margin="5,10,0,0" DockPanel.Dock="Top" Grid.Row="1" VerticalAlignment="Top">
+                        <Button FontSize="20" FontWeight="Bold" Command="{Binding EditFileCommand}" Padding="20">
+                            <StackPanel Orientation="Horizontal" Margin="10">
                                 <fa:ImageAwesome Icon="Solid_Edit" Width="25" Margin="15,0,0,0"></fa:ImageAwesome>
                                 <TextBlock Style="{StaticResource text}" Margin="10,0,15,0">Edit</TextBlock>
                             </StackPanel>
                         </Button>
                     </StackPanel>
-                </DockPanel>
+                </Grid>
                 
             </Grid>
         </DockPanel>

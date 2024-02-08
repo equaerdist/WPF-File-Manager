@@ -1,5 +1,6 @@
 ﻿using fileChanger.Infrastructure.Commands;
 using fileChanger.Services.IUserDialogs;
+using fileChanger.Services.IWindowManager;
 using fileChanger.ViewModels.Base;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace fileChanger.ViewModels.MainWindowViewMod
         #endregion
         private DirectoryViewModel _current = null!;
         private readonly IUserDialogs _dialogs;
+        private readonly IWindowManager _windows;
 
         public DirectoryViewModel CurrentDirectory
         {
@@ -188,6 +190,7 @@ namespace fileChanger.ViewModels.MainWindowViewMod
             }
         }
         #endregion
+        #region команда добавления файла
         public ICommand CreateFileCommand {get;set;}
         private async Task CreateFileAsync(string path)
         {
@@ -208,9 +211,12 @@ namespace fileChanger.ViewModels.MainWindowViewMod
             }
         }
         private bool CanCreateFileExecute(object? p) => true;
-        public MainWindowViewModel(IUserDialogs dialogs)
+        #endregion
+        
+        public MainWindowViewModel(IUserDialogs dialogs, IWindowManager windows)
         {
             _dialogs = dialogs;
+            _windows = windows;
             CurrentDirectory = new DirectoryViewModel(Environment.GetLogicalDrives().First());
             SlideDirectory = new RelayCommand(OnSlideDirectoryExecuted, CanExecuteOnSlideDirectory);
             EditFileCommand = new RelayCommand(EditFileCommandExecuted, CanEditFileCommandExecute);

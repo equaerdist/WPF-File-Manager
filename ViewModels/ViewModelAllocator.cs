@@ -13,6 +13,6 @@ namespace fileChanger.ViewModels
     {
         public MainWindowViewMod.MainWindowViewModel MainWindowViewModel => App.HostClient.Services
             .GetRequiredService<MainWindowViewModel>();
-        public FileEditorViewModel FileEditorViewModel => App.HostClient.Services.GetRequiredService<FileEditorViewModel>();
+        public FileManagerViewModel FileManagerViewModel => App.HostClient.Services .GetRequiredService<FileManagerViewModel>();
     }
 }
