@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:fileChanger.Views.FileManager"
         xmlns:fa="http://schemas.fontawesome.com/icons/"
         xmlns:vm="clr-namespace:fileChanger.ViewModels"
+        xmlns:vms="clr-namespace:fileChanger.ViewModels.MainWindowViewMod"
         xmlns:bh="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         DataContext="{Binding Source={StaticResource Locator}, Path=FileManagerViewModel}"
@@ -35,6 +36,17 @@
                 <fa:ImageAwesome Icon="Regular_File" Width="20" DockPanel.Dock="Left"></fa:ImageAwesome>
                 <ComboBox ItemsSource="{Binding LeftSideDirectory.SubDirectories}" Margin="10,0,0,0" SelectedItem="{Binding SelectedLeftSideDirectory}"></ComboBox>
             </DockPanel>
+            <Button DockPanel.Dock="Top" Margin="0,10,0,10"
+                    Command="{Binding GoBackCommand}"
+                    Background="{StaticResource main_color}" 
+                    Foreground="{StaticResource text_color}"
+                    FontWeight="Bold"
+                    VerticalContentAlignment="Center"
+                    FontSize="19">..
+                <Button.CommandParameter>
+                    <vms:Direction>Left</vms:Direction>
+                </Button.CommandParameter>
+            </Button>
             <ListBox DockPanel.Dock="Top" Background="{StaticResource help_color}" ItemsSource="{Binding LeftSideDirectory.DirectoryItems}"></ListBox>
         </DockPanel>
         <DockPanel Margin="10" Grid.Column="2">
@@ -43,7 +55,19 @@
                 <ComboBox ItemsSource="{Binding RightSideDirectory.SubDirectories}" Margin="10,0,0,0" SelectedItem="{Binding SelectedRightSideDirectory}">
                 </ComboBox>
             </DockPanel>
-            <ListBox DockPanel.Dock="Top" Background="{StaticResource help_color}" ItemsSource="{Binding RightSideDirectory.DirectoryItems}"></ListBox>
+            <Button DockPanel.Dock="Top" Margin="0,10,0,10"
+                    Background="{StaticResource main_color}" 
+                    Foreground="{StaticResource text_color}"
+                    FontWeight="Bold"
+                    Command="{Binding GoBackCommand}"
+                    VerticalContentAlignment="Center"
+                    FontSize="19">..
+                <Button.CommandParameter>
+                    <vms:Direction>Right</vms:Direction>
+                </Button.CommandParameter>
+            </Button>
+            <ListBox DockPanel.Dock="Top" Background="{StaticResource help_color}" ItemsSource="{Binding RightSideDirectory.DirectoryItems}">
+            </ListBox>
         </DockPanel>
     </Grid>
 </Window>
