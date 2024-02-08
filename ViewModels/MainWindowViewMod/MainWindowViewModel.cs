@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Shapes;
 
 namespace fileChanger.ViewModels.MainWindowViewMod
 {
@@ -102,27 +103,35 @@ namespace fileChanger.ViewModels.MainWindowViewMod
             
             set => Set(ref _selectedDirectoryItem, value);
         }
+        #region ошибки при работе с файлом
+        private string FileAccessError(string? additionMessage) => $"Недостаточно прав для записи в файл {additionMessage}";
+        private string FileError(string? additionMessage) => $"Непредвиденная ошибка при записи в фаил\n {additionMessage}";
         #endregion
-        #region команда редактирования файла
-        public ICommand EditFileCommand { get; set; }
-        private async Task WriteContent(string fullName, string? content)
+        private async Task HandleFileSafely(Func<Task> func, string sucess, string authException, string others)
         {
             try
             {
+                await func();
+                _dialogs.ShowInformation(sucess);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                _dialogs.ShowError($"{authException} {ex.HelpLink}");
+            }
+            catch (Exception ex)
+            {
+                _dialogs.ShowError(string.Format("{0} {1}", others, ex.Message));
+            }
+        }
+        #region команда редактирования файла
+        public ICommand EditFileCommand { get; set; }
+      
+        private async Task WriteContent(string fullName, string? content)
+        {
                 using var fileStream = File.OpenWrite(fullName);
                 using var streamWriter = new StreamWriter(fileStream, Encoding.UTF8);
                 await streamWriter.WriteLineAsync(content);
                 await fileStream.FlushAsync();
-                _dialogs.ShowInformation($"Фаил {fullName} успешно записан");
-            }
-            catch(UnauthorizedAccessException ex)
-            {
-                _dialogs.ShowError($"Недостаточно прав для записи в файл {ex.Message}");
-            }
-            catch(Exception ex)
-            {
-                _dialogs.ShowError($"Непредвиденная ошибка при записи в фаил\n {ex.Message}");
-            }
         }
         private async void EditFileCommandExecuted(object? p)
         {
@@ -132,7 +141,10 @@ namespace fileChanger.ViewModels.MainWindowViewMod
             if(result)
             {
                 var fileViewModel = (FileViewModel)SelectedDirectoryItem;
-                await WriteContent(fileViewModel.FullName, fileViewModel.Content);
+                await HandleFileSafely(() =>  WriteContent(fileViewModel.FullName, fileViewModel.Content),
+                    "Фаил успешно отредактирован",
+                    "Возникли ошибки досутпа при записи в фаил",
+                    "Возникли непредвиденные ошибки при записи в фаил");
             }
         }
         private bool CanEditFileCommandExecute(object? p)
@@ -140,12 +152,40 @@ namespace fileChanger.ViewModels.MainWindowViewMod
             return SelectedDirectoryItem != null && SelectedDirectoryItem is FileViewModel;
         }
         #endregion
+        #region команда удаления файла
+        public ICommand DeleteFileCommand { get; set; }
+        private bool CanExecuteDeleteFileCommand(object? p) => SelectedDirectoryItem is not null;
+        private void DeleteFile(string path) => File.Delete(path);
+
+        private void DeleteDirectory(string path) => Directory.Delete(path, true);
+        
+        private async void DeleteFileCommandExecuted(object? p)
+        {
+            if(p is FileViewModel fileViewModel)
+            {
+                await HandleFileSafely(() => { DeleteFile(fileViewModel.FullName);   return Task.CompletedTask;},
+                    "Фаил успешно удален",
+                    "Недостаточно прав для удаления файла",
+                    "Возникла непредвиденная ошибка при удалении"
+                );
+            }
+            if(p is DirectoryViewModel directoryViewModel)
+            {
+                await HandleFileSafely(() => { DeleteDirectory(directoryViewModel.FullName); return Task.CompletedTask; },
+                    "Директория и все ее содержимое удалено",
+                    "Недостаточно прав для удаления директории",
+                    "Возникла непредвиденная ошибка при удалении директории"
+                );
+            }
+            throw new ArgumentException();
+        }
         public MainWindowViewModel(IUserDialogs dialogs)
         {
             _dialogs = dialogs;
             CurrentDirectory = new DirectoryViewModel(Environment.GetLogicalDrives().First());
             SlideDirectory = new RelayCommand(OnSlideDirectoryExecuted, CanExecuteOnSlideDirectory);
             EditFileCommand = new RelayCommand(EditFileCommandExecuted, CanEditFileCommandExecute);
+            DeleteFileCommand = new RelayCommand(DeleteFileCommandExecuted, CanExecuteDeleteFileCommand);
         }
 
     }
