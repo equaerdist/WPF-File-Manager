@@ -9,7 +9,7 @@ using System.Windows;
 
 namespace fileChanger.Services.IWindowManager
 {
-    internal class WindowManager : IWindowManager
+    public  class WindowManager : IWindowManager
     {
         public void OpenWindow(Type type, object? owner)
         {

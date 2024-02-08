@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace fileChanger.Services.IWindowManager
 {
-    internal interface IWindowManager
+    public interface IWindowManager
     {
         void OpenWindow(Type type, object? owner);
     }

@@ -37,6 +37,15 @@
                                 <fa:ImageAwesome Icon="Regular_File" Width="19" Margin="2"></fa:ImageAwesome>
                             </StackPanel>
                         </Button>
+                        <Button Background="Transparent" 
+                                BorderBrush="Transparent"  
+                                ToolTip="Move Manager" 
+                                Margin="20,0,0,0"
+                                Command="{Binding OpenFileManagerCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:ImageAwesome Icon="Solid_ArrowsAlt" Width="19" Margin="2"></fa:ImageAwesome>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </GroupBox>
                 <DockPanel>

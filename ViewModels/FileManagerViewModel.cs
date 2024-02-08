@@ -8,15 +8,44 @@ using System.Threading.Tasks;
 
 namespace fileChanger.ViewModels
 {
-    internal class FileManagerViewModel : BaseViewModel
+   public class FileManagerViewModel : BaseViewModel
     {
-		private DirectoryViewModel _rightSideDirectory = null!;
+        #region выбранная директория правой части
+        private DirectoryViewModel _rightSideDirectory = null!;
 
 		public DirectoryViewModel RightSideDirectory
 		{
 			get { return _rightSideDirectory; }
 			set => Set(ref _rightSideDirectory, value);
 		}
+		private DirectoryViewModel? _selectedRightSideDirectory;
+
+		public DirectoryViewModel? SelectedRightSideDirectory
+		{
+			get { return _selectedRightSideDirectory; }
+			set
+			{
+				Set(ref _selectedRightSideDirectory, value);
+				if(value  is not null)
+					RightSideDirectory = value;
+			}
+		}
+        #endregion
+        #region выбранная директория левой чсти
+        private DirectoryViewModel? _selectedLeftSideDirectory;
+
+		public DirectoryViewModel? SelectedLeftSideDirectory
+		{
+			get { return _selectedLeftSideDirectory; }
+			set 
+			{ 
+				Set(ref _selectedLeftSideDirectory, value);
+				if(value is not null)
+					LeftSideDirectory = value;
+			}
+		}
+
+
 		private DirectoryViewModel _leftSideDirectory = null!;
 
 		public DirectoryViewModel LeftSideDirectory
@@ -24,6 +53,7 @@ namespace fileChanger.ViewModels
 			get { return _leftSideDirectory; }
 			set => Set(ref _leftSideDirectory, value);
 		}
+		#endregion
 		public FileManagerViewModel()
 		{
 			RightSideDirectory = new DirectoryViewModel(Directory.GetLogicalDrives().First());

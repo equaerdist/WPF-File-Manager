@@ -212,7 +212,14 @@ namespace fileChanger.ViewModels.MainWindowViewMod
         }
         private bool CanCreateFileExecute(object? p) => true;
         #endregion
-        
+        #region команда открытия файлового менеджера
+        public ICommand OpenFileManagerCommand { get; }
+        private void OnOpenFileManagerExecute(object? p)
+        {
+            _windows.OpenWindow(typeof(FileManagerViewModel), null);
+        }
+        private bool CanExecuteFileManagerOpen(object? p) => true;
+        #endregion
         public MainWindowViewModel(IUserDialogs dialogs, IWindowManager windows)
         {
             _dialogs = dialogs;
@@ -222,6 +229,7 @@ namespace fileChanger.ViewModels.MainWindowViewMod
             EditFileCommand = new RelayCommand(EditFileCommandExecuted, CanEditFileCommandExecute);
             DeleteFileCommand = new RelayCommand(DeleteFileCommandExecuted, CanExecuteDeleteFileCommand);
             CreateFileCommand = new RelayCommand(OnCreateFileExecuted, CanCreateFileExecute);
+            OpenFileManagerCommand = new RelayCommand(OnOpenFileManagerExecute, CanExecuteFileManagerOpen);
         }
 
     }

@@ -4,9 +4,46 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:fileChanger.Views.FileManager"
+        xmlns:fa="http://schemas.fontawesome.com/icons/"
+        xmlns:vm="clr-namespace:fileChanger.ViewModels"
+        xmlns:bh="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
+        DataContext="{Binding Source={StaticResource Locator}, Path=FileManagerViewModel}"
         Title="FileManager" Height="450" Width="800">
-    <Grid>
-        
+    <Grid Background="{StaticResource secondary_color}">
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type vm:FileViewModel}">
+                <StackPanel Orientation="Horizontal">
+                    <fa:ImageAwesome Icon="Solid_FileCsv" Width="15" Margin="10,0,10,0"></fa:ImageAwesome>
+                    <TextBlock Style="{StaticResource text}" Text="{Binding Name}"></TextBlock>
+                </StackPanel>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:DirectoryViewModel}">
+                <StackPanel Orientation="Horizontal">
+                    <fa:ImageAwesome Icon="Solid_FolderPlus" Width="15" Margin="10,0,10,0"></fa:ImageAwesome>
+                    <TextBlock Style="{StaticResource text}" Text="{Binding Name}"></TextBlock>
+                </StackPanel>
+            </DataTemplate>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10*"></ColumnDefinition>
+            <ColumnDefinition Width="3*"></ColumnDefinition>
+            <ColumnDefinition Width="10*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <DockPanel Margin="10" Grid.Column="0">
+            <DockPanel DockPanel.Dock="Top"  Margin="0,10,0,10">
+                <fa:ImageAwesome Icon="Regular_File" Width="20" DockPanel.Dock="Left"></fa:ImageAwesome>
+                <ComboBox ItemsSource="{Binding LeftSideDirectory.SubDirectories}" Margin="10,0,0,0" SelectedItem="{Binding SelectedLeftSideDirectory}"></ComboBox>
+            </DockPanel>
+            <ListBox DockPanel.Dock="Top" Background="{StaticResource help_color}" ItemsSource="{Binding LeftSideDirectory.DirectoryItems}"></ListBox>
+        </DockPanel>
+        <DockPanel Margin="10" Grid.Column="2">
+            <DockPanel DockPanel.Dock="Top"  Margin="0,10,0,10">
+                <fa:ImageAwesome Icon="Regular_File" Width="20" DockPanel.Dock="Left"></fa:ImageAwesome>
+                <ComboBox ItemsSource="{Binding RightSideDirectory.SubDirectories}" Margin="10,0,0,0" SelectedItem="{Binding SelectedRightSideDirectory}">
+                </ComboBox>
+            </DockPanel>
+            <ListBox DockPanel.Dock="Top" Background="{StaticResource help_color}" ItemsSource="{Binding RightSideDirectory.DirectoryItems}"></ListBox>
+        </DockPanel>
     </Grid>
 </Window>
