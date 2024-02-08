@@ -23,12 +23,16 @@
             <DockPanel DockPanel.Dock="Top">
                 <GroupBox DockPanel.Dock="Top" Header="Actions">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Button Background="Transparent" BorderBrush="Transparent" ToolTip="Delete">
+                        <Button Background="Transparent" BorderBrush="Transparent" ToolTip="Delete" Command="{Binding DeleteFileCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <fa:ImageAwesome Icon="Solid_Trash" Width="20" Margin="2"></fa:ImageAwesome>
                             </StackPanel>
                         </Button>
-                        <Button Background="Transparent" BorderBrush="Transparent"  ToolTip="Create" Margin="20,0,0,0">
+                        <Button Background="Transparent" 
+                                BorderBrush="Transparent"  
+                                ToolTip="Create" 
+                                Margin="20,0,0,0"
+                                Command="{Binding CreateFileCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <fa:ImageAwesome Icon="Regular_File" Width="19" Margin="2"></fa:ImageAwesome>
                             </StackPanel>

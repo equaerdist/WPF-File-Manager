@@ -31,7 +31,8 @@ namespace fileChanger.ViewModels
         public IEnumerable<object> DirectoryItems { 
             get 
             {
-                if(_directoryItems == null)
+               
+                if (_directoryItems == null)
                 {
                     InitializeItems();
                     return Enumerable.Empty<object>();

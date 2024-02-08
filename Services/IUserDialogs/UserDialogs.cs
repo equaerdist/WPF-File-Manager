@@ -1,5 +1,6 @@
 ﻿using fileChanger.ViewModels;
 using fileChanger.Views.Dialogs;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,19 @@ namespace fileChanger.Services.IUserDialogs
         public bool Confirm(string question)
         {
             return MessageBox.Show(question, "Modal", MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK;
+        }
+
+        public bool CreateFile(string initialDirectory, out string fileName)
+        {
+            var fileDialog = new SaveFileDialog();
+            fileDialog.InitialDirectory = initialDirectory;
+            if (fileDialog.ShowDialog() == true)
+            {
+                fileName = fileDialog.FileName;
+                return true;
+            }
+            fileName = string.Empty;
+            return false;
         }
 
         public bool Edit(object item)

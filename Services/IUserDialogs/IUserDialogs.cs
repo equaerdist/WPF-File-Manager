@@ -12,5 +12,6 @@ namespace fileChanger.Services.IUserDialogs
         void ShowError(string error);
         bool Edit(object item);
         void ShowInformation(string info);
+        bool CreateFile(string initialDirectory, out string fileName);
     }
 }
