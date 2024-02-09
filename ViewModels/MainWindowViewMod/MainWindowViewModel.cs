@@ -1,4 +1,5 @@
 ﻿using fileChanger.Infrastructure.Commands;
+using fileChanger.Services.FileService;
 using fileChanger.Services.IUserDialogs;
 using fileChanger.Services.IWindowManager;
 using fileChanger.ViewModels.Base;
@@ -37,6 +38,7 @@ namespace fileChanger.ViewModels.MainWindowViewMod
         private DirectoryViewModel _current = null!;
         private readonly IUserDialogs _dialogs;
         private readonly IWindowManager _windows;
+        private readonly IFileService _filesService;
 
         public DirectoryViewModel CurrentDirectory
         {
@@ -68,12 +70,12 @@ namespace fileChanger.ViewModels.MainWindowViewMod
                 return;
             if (direction == Direction.Left && index != 0)
             {
-                _history[index - 1] = RebootDirectoryInfo(_history[index - 1]);
+                _history[index - 1] = _filesService.RebootDirectoryInfo(_history[index - 1]);
                 CurrentDirectory = _history[index - 1];
             }
             if (direction == Direction.Right && index != _history.Count - 1)
             {
-                _history[index + 1] = RebootDirectoryInfo(_history[index + 1]);
+                _history[index + 1] = _filesService.RebootDirectoryInfo(_history[index + 1]);
                 CurrentDirectory = _history[index + 1];
             }
         }
@@ -112,26 +114,6 @@ namespace fileChanger.ViewModels.MainWindowViewMod
             set => Set(ref _selectedDirectoryItem, value);
         }
         #endregion
-        #region ошибки при работе с файлом
-        private string FileAccessError(string? additionMessage) => $"Недостаточно прав для записи в файл {additionMessage}";
-        private string FileError(string? additionMessage) => $"Непредвиденная ошибка при записи в фаил\n {additionMessage}";
-        #endregion
-        private async Task HandleFileSafely(Func<Task> func, string sucess, string authException, string others)
-        {
-            try
-            {
-                await func();
-                _dialogs.ShowInformation(sucess);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                _dialogs.ShowError($"{authException} {ex.HelpLink}");
-            }
-            catch (Exception ex)
-            {
-                _dialogs.ShowError(string.Format("{0} {1}", others, ex.Message));
-            }
-        }
         #region команда редактирования файла
         public ICommand EditFileCommand { get; set; }
 
@@ -150,7 +132,7 @@ namespace fileChanger.ViewModels.MainWindowViewMod
             if (result)
             {
                 var fileViewModel = (FileViewModel)SelectedDirectoryItem;
-                await HandleFileSafely(() => WriteContent(fileViewModel.FullName, fileViewModel.Content),
+                await _filesService.HandleFileSafely(() => WriteContent(fileViewModel.FullName, fileViewModel.Content),
                     "Фаил успешно отредактирован",
                     "Возникли ошибки досутпа при записи в фаил",
                     "Возникли непредвиденные ошибки при записи в фаил");
@@ -167,26 +149,25 @@ namespace fileChanger.ViewModels.MainWindowViewMod
         private void DeleteFile(string path) => File.Delete(path);
 
         private void DeleteDirectory(string path) => Directory.Delete(path, true);
-        private DirectoryViewModel RebootDirectoryInfo(DirectoryViewModel info) => new(info.FullName);
         private async void DeleteFileCommandExecuted(object? p)
         {
             if (SelectedDirectoryItem is FileViewModel fileViewModel)
             {
-                await HandleFileSafely(() => { DeleteFile(fileViewModel.FullName); return Task.CompletedTask; },
+                await _filesService.HandleFileSafely(() => { DeleteFile(fileViewModel.FullName); return Task.CompletedTask; },
                     "Фаил успешно удален",
                     "Недостаточно прав для удаления файла",
                     "Возникла непредвиденная ошибка при удалении"
                 );
-                CurrentDirectory = RebootDirectoryInfo(CurrentDirectory);
+                CurrentDirectory = _filesService.RebootDirectoryInfo(CurrentDirectory);
             }
             if (SelectedDirectoryItem is DirectoryViewModel directoryViewModel)
             {
-                await HandleFileSafely(() => { DeleteDirectory(directoryViewModel.FullName); return Task.CompletedTask; },
+                await _filesService.HandleFileSafely(() => { DeleteDirectory(directoryViewModel.FullName); return Task.CompletedTask; },
                     "Директория и все ее содержимое удалено",
                     "Недостаточно прав для удаления директории",
                     "Возникла непредвиденная ошибка при удалении директории"
                 );
-                CurrentDirectory = RebootDirectoryInfo(CurrentDirectory);
+                CurrentDirectory = _filesService.RebootDirectoryInfo(CurrentDirectory);
             }
         }
         #endregion
@@ -201,13 +182,13 @@ namespace fileChanger.ViewModels.MainWindowViewMod
             string fileName = string.Empty;
             if (_dialogs.CreateFile(CurrentDirectory.FullName, out fileName))
             {
-                await HandleFileSafely(() => CreateFileAsync(fileName),
+                await _filesService.HandleFileSafely(() => CreateFileAsync(fileName),
                     "Фаил успешно создан",
                     "Недостаточно прав для создания файла",
                     "Возникли ошибки при создании файла"
                 );
                 if(Path.GetDirectoryName(fileName) == CurrentDirectory.FullName)
-                    CurrentDirectory = RebootDirectoryInfo(CurrentDirectory);
+                    CurrentDirectory = _filesService.RebootDirectoryInfo(CurrentDirectory);
             }
         }
         private bool CanCreateFileExecute(object? p) => true;
@@ -220,10 +201,11 @@ namespace fileChanger.ViewModels.MainWindowViewMod
         }
         private bool CanExecuteFileManagerOpen(object? p) => true;
         #endregion
-        public MainWindowViewModel(IUserDialogs dialogs, IWindowManager windows)
+        public MainWindowViewModel(IUserDialogs dialogs, IWindowManager windows, IFileService fileService)
         {
             _dialogs = dialogs;
             _windows = windows;
+            _filesService = fileService;
             CurrentDirectory = new DirectoryViewModel(Environment.GetLogicalDrives().First());
             SlideDirectory = new RelayCommand(OnSlideDirectoryExecuted, CanExecuteOnSlideDirectory);
             EditFileCommand = new RelayCommand(EditFileCommandExecuted, CanEditFileCommandExecute);

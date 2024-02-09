@@ -28,7 +28,7 @@ namespace fileChanger.ViewModels.Base
         }
         protected virtual bool Set<T>(ref T oldValue, T newValue, [CallerMemberName] string? propertyName = null)
         {
-            if(Equals(oldValue, newValue)) return false;
+            if(oldValue?.Equals(newValue) == true) return false;
             oldValue = newValue;
             OnPropertyChanged(propertyName); return true;
         }

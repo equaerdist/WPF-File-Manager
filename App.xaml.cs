@@ -1,4 +1,5 @@
-﻿using fileChanger.Services.IUserDialogs;
+﻿using fileChanger.Services.FileService;
+using fileChanger.Services.IUserDialogs;
 using fileChanger.Services.IWindowManager;
 using fileChanger.ViewModels;
 using fileChanger.ViewModels.MainWindowViewMod;
@@ -51,6 +52,7 @@ namespace fileChanger
                             provider.AddSingleton<IUserDialogs, UserDialogs>();
                             provider.AddSingleton<FileManagerViewModel>();
                             provider.AddSingleton<IWindowManager, WindowManager>();
+                            provider.AddSingleton<IFileService, FileService>();
                             context.HostingEnvironment.ContentRootPath = Environment.CurrentDirectory;
                         })
                         .ConfigureAppConfiguration((context, config) =>
