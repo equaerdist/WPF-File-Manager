@@ -50,9 +50,11 @@
             <ListBox DockPanel.Dock="Top" 
                             x:Name="List_left"
                             AllowDrop="True"
+                            Drop="List_left_Drop"
                             Background="{StaticResource help_color}" 
                             ItemsSource="{Binding LeftSideDirectory.DirectoryItems}"
                             SelectionMode="Extended"
+                            PreviewDragOver="list_DragOver"
                      ></ListBox>
            
         </DockPanel>
@@ -79,7 +81,8 @@
                      x:Name="List_right"
                      Drop="List_right_Drop"
                      AllowDrop="True"
-                     SelectionMode="Extended">
+                     SelectionMode="Extended"
+                     PreviewDragOver="list_DragOver">
             </ListBox>
         </DockPanel>
         <Grid Grid.Column="1">
