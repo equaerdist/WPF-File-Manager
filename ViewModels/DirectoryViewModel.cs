@@ -61,14 +61,6 @@ namespace fileChanger.ViewModels
         }
         public string Name => _directory.Name;
         public string? _filesCountInside;
-        public override bool Equals(object? obj)
-        {
-            if(obj is DirectoryViewModel directoryViewModel)
-            {
-                return directoryViewModel.FullName == FullName;
-            }
-            return base.Equals(obj);
-        }
         public string FilesCountInside
         {
             get
