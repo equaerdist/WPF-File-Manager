@@ -7,37 +7,50 @@
         xmlns:local="clr-namespace:fileChanger"
         xmlns:bh="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:vms="clr-namespace:fileChanger.ViewModels"
+        xmlns:vm="clr-namespace:fileChanger.ViewModels.MainWindowViewMod"
         xmlns:beh="clr-namespace:fileChanger.Infrastructure.Behaviors"
         xmlns:sys="clr-namespace:System.IO;assembly=mscorlib"
         mc:Ignorable="d"
-        xmlns:vm="clr-namespace:fileChanger.ViewModels.MainWindowViewModel"
         xmlns:conv="clr-namespace:fileChanger.Infrastructure.Converters.CurrentDirectoryConverter"
-        Title="MainWindow" Height="450" Width="800">
-    <Window.DataContext>
-        <vm:MainWindowViewModel></vm:MainWindowViewModel>
-    </Window.DataContext>
+        Title="MainWindow" Height="700" Width="800" DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowViewModel}">
+    
     <Window.Resources>
         <conv:DirectoryConverter x:Key="converter_directory"></conv:DirectoryConverter>
         <conv:FileDirectoryConverter x:Key="file-directory_converter"></conv:FileDirectoryConverter>
     </Window.Resources>
     <Grid Background="{StaticResource secondary_color}">
-        <DockPanel>
+        <DockPanel Margin="15">
             <DockPanel DockPanel.Dock="Top">
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-                    <Button Background="Transparent" BorderBrush="Transparent" Margin="10" ToolTip="Delete">
-                        <StackPanel Orientation="Horizontal">
-                            <fa:ImageAwesome Icon="Solid_Trash" Width="20" Margin="5"></fa:ImageAwesome>
-                        </StackPanel>
-                    </Button>
-                    <Button Background="Transparent" BorderBrush="Transparent" Margin="10" ToolTip="Create">
-                        <StackPanel Orientation="Horizontal">
-                            <fa:ImageAwesome Icon="Regular_File" Width="19" Margin="5"></fa:ImageAwesome>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
+                <GroupBox DockPanel.Dock="Top" Header="Actions">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Background="Transparent" BorderBrush="Transparent" ToolTip="Delete" Command="{Binding DeleteFileCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:ImageAwesome Icon="Solid_Trash" Width="20" Margin="2"></fa:ImageAwesome>
+                            </StackPanel>
+                        </Button>
+                        <Button Background="Transparent" 
+                                BorderBrush="Transparent"  
+                                ToolTip="Create" 
+                                Margin="20,0,0,0"
+                                Command="{Binding CreateFileCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:ImageAwesome Icon="Regular_File" Width="19" Margin="2"></fa:ImageAwesome>
+                            </StackPanel>
+                        </Button>
+                        <Button Background="Transparent" 
+                                BorderBrush="Transparent"  
+                                ToolTip="Move Manager" 
+                                Margin="20,0,0,0"
+                                Command="{Binding OpenFileManagerCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <fa:ImageAwesome Icon="Solid_ArrowsAlt" Width="19" Margin="2"></fa:ImageAwesome>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </GroupBox>
                 <DockPanel>
                     <DockPanel.Resources>
-                        <DataTemplate DataType="{x:Type sys:DirectoryInfo}">
+                        <DataTemplate DataType="{x:Type vms:DirectoryViewModel}">
                             <StackPanel Orientation="Horizontal">
                                 <fa:ImageAwesome Icon="Solid_Directions" Width="15" Foreground="{StaticResource main_color}" Margin="0,0,5,0"></fa:ImageAwesome>
                                 <TextBlock Text="{Binding Name}"></TextBlock>
@@ -46,90 +59,124 @@
                         </DataTemplate>
                     </DockPanel.Resources>
                     <DockPanel DockPanel.Dock="Left">
-                        <StackPanel DockPanel.Dock="Left" Margin="5" Orientation="Vertical">
-                            <TextBlock  VerticalAlignment="Center" TextWrapping="Wrap" Style="{StaticResource text}">
-                            Current directory
-                            </TextBlock>
-                            <TextBlock Text="{Binding CurrentDirectory.Name}" Style="{StaticResource text}"></TextBlock>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
-                            <Button Command="{Binding SlideDirectory}" Padding="5">
-                                <Button.CommandParameter>
-                                    <vm:Direction>Left</vm:Direction>
-                                </Button.CommandParameter>
-                                <fa:ImageAwesome Icon="Solid_ArrowAltCircleLeft" Width="20" Foreground="{StaticResource main_color}">
-                                </fa:ImageAwesome>
-                            </Button>
-                            <Button  Margin="10,0,0,0" Padding="5" Command="{Binding SlideDirectory}">
+                        <DockPanel  Margin="15,0,10,0" Width="170">
+                            <Button  Margin="10,0,0,0" Padding="5" Command="{Binding SlideDirectory}" DockPanel.Dock="Right">
                                 <Button.CommandParameter>
                                     <vm:Direction>Right</vm:Direction>
                                 </Button.CommandParameter>
-                                <fa:ImageAwesome Icon="Solid_ArrowAltCircleRight" Width="20" Foreground="{StaticResource main_color}"></fa:ImageAwesome>
+                                <fa:ImageAwesome Icon="Solid_ArrowAltCircleRight" Width="20" Foreground="{StaticResource main_color}" Margin="5"></fa:ImageAwesome>
                             </Button>
-                        </StackPanel>
+                            <Button Command="{Binding SlideDirectory}" Padding="5" DockPanel.Dock="Right">
+                                <Button.CommandParameter>
+                                    <vm:Direction>Left</vm:Direction>
+                                </Button.CommandParameter>
+                                <fa:ImageAwesome Icon="Solid_ArrowAltCircleLeft" Width="20" Foreground="{StaticResource main_color}" Margin="5">
+                                </fa:ImageAwesome>
+                            </Button>
+                            <TextBlock Style="{StaticResource text}" VerticalAlignment="Center">Files</TextBlock>
+                        </DockPanel>
                     </DockPanel>
-                    <ComboBox Margin="0,5,5,5" ItemsSource="{Binding CurrentDirectory, Converter={StaticResource converter_directory}, Mode=OneWay}" SelectedItem="{Binding SelectedDirectory}">
-                    </ComboBox>
+                    <Grid>
+                      
+                        <ComboBox Margin="0,5,5,5" 
+                              ItemsSource="{Binding CurrentDirectory.SubDirectories, Mode=OneWay}" 
+                              SelectedItem="{Binding SelectedDirectory}">
+                            <ComboBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </ComboBox.ItemsPanel>
+                        </ComboBox>
+                        <StackPanel Margin="5" Orientation="Horizontal">
+                            <TextBlock  VerticalAlignment="Center" TextWrapping="Wrap" Style="{StaticResource text}">
+                            Current directory
+                            </TextBlock>
+                            <TextBlock Text="{Binding CurrentDirectory.Name, StringFormat=' : {0}'}" Style="{StaticResource text}" VerticalAlignment="Center"></TextBlock>
+                        </StackPanel>
+                    </Grid>
+                   
                 </DockPanel>
             </DockPanel>
             <Grid Margin="5">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"></ColumnDefinition>
+                    <ColumnDefinition  Width="180"></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <TreeView ItemsSource="{Binding CurrentDirectory, Converter={StaticResource file-directory_converter}}" 
+                <TreeView ItemsSource="{Binding CurrentDirectory.DirectoryItems}" 
                           Grid.Column="0"
+                        VirtualizingStackPanel.IsVirtualizing="True"
+                        VirtualizingStackPanel.VirtualizationMode="Recycling"
                           >
                     <bh:Interaction.Behaviors>
                         <beh:BindableSelectedItemBehavior SelectedItem="{Binding SelectedDirectoryItem, Mode=TwoWay}"></beh:BindableSelectedItemBehavior>
                     </bh:Interaction.Behaviors>
                     <TreeView.Resources>
-                        <HierarchicalDataTemplate DataType="{x:Type vms:DirectoryViewModel}" ItemsSource="{Binding SubDirectories}">
-                            <StackPanel Orientation="Horizontal" Margin="0,5">
-                                <fa:ImageAwesome Icon="Solid_FileArchive" Width="15" Margin="0,0,5,0"></fa:ImageAwesome>
-                                <TextBlock Text="{Binding Name}"></TextBlock>
-                            </StackPanel>
-                        </HierarchicalDataTemplate>
                         <DataTemplate DataType="{x:Type vms:FileViewModel}">
                             <StackPanel Orientation="Horizontal" Margin="0,5">
                                 <fa:ImageAwesome Icon="Solid_File" Width="15" Margin="0,0,5,0"></fa:ImageAwesome>
                                 <TextBlock Text="{Binding Name}"></TextBlock>
                             </StackPanel>
                         </DataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type vms:DirectoryViewModel}" ItemsSource="{Binding SubDirectories}">
+                            <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <fa:ImageAwesome Icon="Solid_FileArchive" Width="15" Margin="0,0,5,0"></fa:ImageAwesome>
+                                <TextBlock Text="{Binding Name}"></TextBlock>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
                     </TreeView.Resources>
                 </TreeView>
-                <GridSplitter Grid.Column="1" ResizeDirection="Columns" Background="{StaticResource main_color}" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="1"></GridSplitter>
-                <ContentPresenter Content="{Binding SelectedDirectoryItem}" Grid.Column="1">
-                    <ContentPresenter.Resources>
-                        <DataTemplate DataType="{x:Type vms:DirectoryViewModel}">
-                            <Grid>
-                                <DockPanel>
-                                    <fa:ImageAwesome Icon="Regular_FileArchive" Width="75" DockPanel.Dock="Top"></fa:ImageAwesome>
-                                    <GroupBox Header="Information" BorderBrush="{StaticResource main_color}" Foreground="{StaticResource text_color}">
-                                        <StackPanel Margin="0,10,0,10">
-                                            <TextBlock  Text="{Binding LastModified, StringFormat='Last modified at {0}'}" Style="{StaticResource text}"></TextBlock>
-                                            <TextBlock  Text="{Binding FilesCountInside, StringFormat=' {0} files exists inside this directory'}" TextWrapping="Wrap" Style="{StaticResource text}"></TextBlock>
-                                        </StackPanel>
-                                    </GroupBox>
-                                </DockPanel>
-                            </Grid>
-                        </DataTemplate>
-                        <DataTemplate DataType="{x:Type vms:FileViewModel}">
-                            <Grid Margin="5">
-                                <DockPanel>
-                                    <fa:ImageAwesome Icon="Regular_File" Width="75" DockPanel.Dock="Top"></fa:ImageAwesome>
-                                    <GroupBox Header="Information" BorderBrush="{StaticResource main_color}" Foreground="{StaticResource text_color}">
-                                        <StackPanel Margin="0,10,0,10">
-                                            <TextBlock  Text="{Binding LastModified, StringFormat='Last modified at {0}'}" Style="{StaticResource text}"></TextBlock>
-                                            <TextBlock  Text="{Binding FirstView, StringFormat='Part of content in this file: {0}'}" TextWrapping="Wrap" Style="{StaticResource text}"></TextBlock>
-                                            <TextBlock  Text="{Binding Size, StringFormat='Size in bytes of file is {0}'}" TextWrapping="Wrap" Style="{StaticResource text}"></TextBlock>
-                                        </StackPanel>
-                                    </GroupBox>
-                                </DockPanel>
-                            </Grid>
-                        </DataTemplate>
-                    </ContentPresenter.Resources>
-                </ContentPresenter>
+                <GridSplitter Grid.Column="1"
+                              ResizeDirection="Columns" 
+                              Background="{StaticResource main_color}" 
+                              HorizontalAlignment="Left" 
+                              VerticalAlignment="Stretch" 
+                              Width="1"></GridSplitter>
+                <Grid Grid.Column="1"  Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <ContentPresenter Content="{Binding SelectedDirectoryItem}" Grid.Row="0">
+                        <ContentPresenter.Resources>
+                            <DataTemplate DataType="{x:Type vms:DirectoryViewModel}">
+                                <Grid>
+                                    <DockPanel>
+                                        <fa:ImageAwesome Icon="Regular_FileArchive" Width="75" DockPanel.Dock="Top"></fa:ImageAwesome>
+                                        <GroupBox Header="{Binding Name, StringFormat='Information about {0}'}" BorderBrush="{StaticResource main_color}" Foreground="{StaticResource text_color}">
+                                            <StackPanel Margin="0,10,0,10">
+                                                <TextBlock  Text="{Binding LastModified, StringFormat='Last modified at {0}'}" Style="{StaticResource text}"></TextBlock>
+                                                <TextBlock  Text="{Binding FilesCountInside, StringFormat=' {0} files exists inside this directory'}" TextWrapping="Wrap" Style="{StaticResource text}"></TextBlock>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </DockPanel>
+                                </Grid>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vms:FileViewModel}">
+                                <Grid Margin="5">
+                                    <DockPanel>
+                                        <fa:ImageAwesome Icon="Regular_File" Width="75" DockPanel.Dock="Top"></fa:ImageAwesome>
+                                        <GroupBox Header="{Binding Name, StringFormat='Information about {0}'}" BorderBrush="{StaticResource main_color}" Foreground="{StaticResource text_color}" Margin="0,10,0,0">
+                                            <StackPanel Margin="0,10,0,0">
+                                                <TextBlock  Text="{Binding LastModified, StringFormat='Last modified at {0}'}" Style="{StaticResource text}"></TextBlock>
+                                                <TextBlock  Text="{Binding FirstView, StringFormat='Part of content in this file: {0}'}" TextWrapping="Wrap" Style="{StaticResource text}"></TextBlock>
+                                                <TextBlock  Text="{Binding Size, StringFormat='Size in bytes of file is {0}'}" TextWrapping="Wrap" Style="{StaticResource text}"></TextBlock>
+                                            </StackPanel>
+                                        </GroupBox>
+                                    </DockPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ContentPresenter.Resources>
+                    </ContentPresenter>
+                    <StackPanel Orientation="Horizontal" Margin="5,10,0,0" DockPanel.Dock="Top" Grid.Row="1" VerticalAlignment="Top">
+                        <Button FontSize="20" FontWeight="Bold" Command="{Binding EditFileCommand}" Padding="20">
+                            <StackPanel Orientation="Horizontal" Margin="10">
+                                <fa:ImageAwesome Icon="Solid_Edit" Width="25" Margin="15,0,0,0"></fa:ImageAwesome>
+                                <TextBlock Style="{StaticResource text}" Margin="10,0,15,0">Edit</TextBlock>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                
             </Grid>
         </DockPanel>
     </Grid>
